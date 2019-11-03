@@ -10,24 +10,30 @@ soup = BeautifulSoup(html_content, "html.parser")
 
 #print(soup.prettify())
 all = soup.find_all("div",{"class":"propertyRow"})
+prop_list = []
 for item in all:
+    dict = {}
     price = item.find("h4",{"class":"propPrice"})
     prop_price = price.text.replace("\n","").replace(" ","")
-    print(prop_price)
-    prop_details = item.find_all("span",{"class":"propAddressCollapse"})[0].text
-
-    print(prop_details)
+    dict["Price"]=prop_price
+    dict["Address"] = item.find_all("span",{"class":"propAddressCollapse"})[0].text
+    dict["Locality"] = item.find_all("span",{"class":"propAddressCollapse"})[1].text
+    #print(prop_details)
     try:
-        print(item.find("span",{"class":"infoBed"}).find("b").text)
+        dict["Beds"] = item.find("span",{"class":"infoBed"}).find("b").text
     except:
-        print(None)
+        dict["Beds"] = None
     for column_group in item.find_all("div",{"class":"columnGroup"}):
-        #print(column_group.text)
         for feature_group, feature_name in zip(
             column_group.find_all("span",{"class":"featureGroup"}),column_group.find_all("span",{"class":"featureName"})):
             #print (feature_group.text, feature_name.text)
             if "Lot size" in feature_group.text:
-                print(feature_name.text)
+                dict["Lot size"] = feature_name.text
 
     
-    print()
+    #print()
+    prop_list.append(dict)
+
+#print(prop_list)
+df = pandas.DataFrame(prop_list)
+df.to_csv("Prop.csv")
