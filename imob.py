@@ -2,23 +2,28 @@ from bs4 import BeautifulSoup
 import pandas
 import requests
 
+output_file = "output.csv"
+
 r = requests.get("http://www.pyclass.com/real-estate/rock-springs-wy/LCWYROCKSPRINGS/", headers={'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
 
 html_content = r.content
 
 soup = BeautifulSoup(html_content, "html.parser")
-
+# Search for a anchor elements of Class Page and get the last one from the list 
+# the last page number in the list [-1] is the number of result pages  
+page_nr = soup.find_all("a",{"class":"Page"})[-1].text
+print("There are {} results pages.".format(page_nr))
 #print(soup.prettify())
 all = soup.find_all("div",{"class":"propertyRow"})
-prop_list = []
+
+properties_list = []
 for item in all:
     dict = {}
     price = item.find("h4",{"class":"propPrice"})
-    prop_price = price.text.replace("\n","").replace(" ","")
-    dict["Price"]=prop_price
+    property_price = price.text.replace("\n","").replace(" ","")
+    dict["Price"] = property_price
     dict["Address"] = item.find_all("span",{"class":"propAddressCollapse"})[0].text
     dict["Locality"] = item.find_all("span",{"class":"propAddressCollapse"})[1].text
-    #print(prop_details)
     try:
         dict["Beds"] = item.find("span",{"class":"infoBed"}).find("b").text
     except:
@@ -32,8 +37,16 @@ for item in all:
 
     
     #print()
-    prop_list.append(dict)
+    properties_list.append(dict)
 
-#print(prop_list)
-df = pandas.DataFrame(prop_list)
-df.to_csv("Prop.csv")
+#print(properties_list)
+df = pandas.DataFrame(properties_list)
+df.to_csv(output_file, index = False)
+print ("The web scrapping output has been exported to the CSV file: {}".format(output_file))
+
+print()
+
+dataframe = pandas.read_csv(output_file, header = 0)
+print ("This is how the CSV file, imported into a Pandas dataframe, looks like")
+print(dataframe)
+print("   {} results found".format(dataframe.shape[0]))
