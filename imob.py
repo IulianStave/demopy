@@ -3,8 +3,10 @@ import pandas
 import requests
 
 output_file = "output.csv"
+url = "http://www.pyclass.com/real-estate/rock-springs-wy/LCWYROCKSPRINGS/"
+mozilla_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'
 
-r = requests.get("http://www.pyclass.com/real-estate/rock-springs-wy/LCWYROCKSPRINGS/", headers={'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
+r = requests.get(url, headers={'User-agent': mozilla_agent})
 
 html_content = r.content
 
@@ -17,6 +19,7 @@ print("There are {} results pages.".format(page_nr))
 all = soup.find_all("div",{"class":"propertyRow"})
 
 properties_list = []
+#for i in range(0, int(page_nr)):
 for item in all:
     dict = {}
     price = item.find("h4",{"class":"propPrice"})
