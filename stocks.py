@@ -22,11 +22,8 @@ df = data.DataReader(name = "GOOG", data_source = "yahoo", start = start_date, e
 #print(df)
 # 12 hours width, 12 hours gap, 
 chart  = figure(x_axis_type = 'datetime', width = 1000, height = 300)
-t = Title()
-t.text = "Candlestick chart"
-chart.title = t
-Title()
-print(df.index) 
+chart.title.text = "Chart stocks"
+#print(df.index) 
 df["Status"] = [inc_dec(open, close) for open, close in zip(df.Open, df.Close)]
 df["Middle"] = (df.Open + df.Close)/2
 df["Height"] = abs(df.Close - df.Open)
